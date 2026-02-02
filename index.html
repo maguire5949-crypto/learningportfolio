@@ -31,12 +31,19 @@
             animation: fadeIn 0.4s ease-out forwards;
         }
 
+        /* Fix for generator flex layout */
+        #generator .page-section-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- FLIP CARD (Enhanced for hiding front content) --- */
+        /* --- FLIP CARD --- */
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
@@ -62,7 +69,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden; /* Standard hiding */
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             border-radius: 1rem;
             display: flex;
@@ -77,19 +84,17 @@
             .flip-card-front, .flip-card-back { padding: 1rem; }
         }
 
-        /* Front specific */
         .flip-card-front { 
             background-color: white; 
-            z-index: 2; /* Initially on top */
+            z-index: 2;
         }
         
-        /* Back specific */
         .flip-card-back {
             background-color: #f0f9ff;
             color: #0369a1;
             transform: rotateY(180deg);
             border: 2px solid #bae6fd;
-            z-index: 1; /* Initially below */
+            z-index: 1;
         }
         .flip-card-back.course {
             background-color: #fff7ed;
@@ -97,13 +102,8 @@
             border: 2px solid #fed7aa;
         }
 
-        /* Z-Index Swapping to ensure badge B/C etc are strictly hidden */
-        .flip-card.flipped .flip-card-front {
-            z-index: 0; /* Push to back when flipped */
-        }
-        .flip-card.flipped .flip-card-back {
-            z-index: 2; /* Pull to front when flipped */
-        }
+        .flip-card.flipped .flip-card-front { z-index: 0; }
+        .flip-card.flipped .flip-card-back { z-index: 2; }
 
         .flip-hint {
             position: absolute;
@@ -180,7 +180,6 @@
                 <i class="fa-solid fa-folder-open text-orange-500"></i>
                 <span>攻略<span class="text-gray-400 font-light">助手</span></span>
             </div>
-            <!-- Title -->
             <p class="text-xs text-gray-400 mt-2 tracking-wide">學習歷程檔案全方位指南</p>
         </div>
         <nav class="flex-1 p-4 space-y-2">
@@ -663,79 +662,81 @@
                     </div>
 
                     <!-- Content -->
-                    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6" id="wizard-content">
+                    <div class="flex-1 overflow-hidden p-4 md:p-6 flex flex-col" id="wizard-content">
                         <!-- Step 1 -->
-                        <div id="step-1-block" class="wizard-step animate-[fadeIn_0.5s_ease-out]">
-                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                        <div id="step-1-block" class="wizard-step animate-[fadeIn_0.5s_ease-out] flex-1 flex flex-col h-full">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4 shrink-0">
                                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-clock-rotate-left"></i></div>
                                 <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
                                     嗨！我是你的寫作助手。讓我們從<b>「過去」</b>開始。<br>
                                     請問你參加了什麼活動？在這個過程中，你做了什麼？遇到了什麼困難？
                                 </div>
                             </div>
-                            <div class="pl-11 md:pl-14">
-                                <div class="flex justify-end mb-2">
+                            <div class="pl-11 md:pl-14 flex-1 flex flex-col min-h-0">
+                                <div class="flex justify-end mb-2 shrink-0">
                                     <button onclick="aiAssist(1)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
                                 </div>
-                                <input type="text" id="inp-title" class="w-full mb-3 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="活動名稱 (例如：校慶園遊會)">
-                                <textarea id="inp-past" rows="4" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="我負責...過程中發生了..."></textarea>
-                                <button onclick="nextStep(2)" class="mt-4 px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition float-right shadow-md hover:shadow-lg w-full md:w-auto">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                                <input type="text" id="inp-title" class="w-full mb-3 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base shrink-0" placeholder="活動名稱 (例如：校慶園遊會)">
+                                <textarea id="inp-past" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base flex-1 resize-none overflow-y-auto" placeholder="我負責...過程中發生了..."></textarea>
+                                <div class="mt-4 shrink-0">
+                                    <button onclick="nextStep(2)" class="w-full md:w-auto px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition float-right shadow-md hover:shadow-lg">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Step 2 -->
-                        <div id="step-2-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out]">
-                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                        <div id="step-2-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out] flex-1 flex flex-col h-full">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4 shrink-0">
                                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-lightbulb"></i></div>
                                 <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
                                     很好！接下來是<b>「現在」</b>。<br>
                                     針對剛剛提到的困難，你怎麼解決？你覺得自己學會了什麼新能力？
                                 </div>
                             </div>
-                            <div class="pl-11 md:pl-14">
-                                <div class="flex justify-end mb-2">
+                            <div class="pl-11 md:pl-14 flex-1 flex flex-col min-h-0">
+                                <div class="flex justify-end mb-2 shrink-0">
                                     <button onclick="aiAssist(2)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
                                 </div>
-                                <textarea id="inp-present" rows="5" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="我透過...解決了問題，我發現自己學會了..."></textarea>
-                                <div class="mt-4 flex justify-end gap-2">
+                                <textarea id="inp-present" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base flex-1 resize-none overflow-y-auto" placeholder="我透過...解決了問題，我發現自己學會了..."></textarea>
+                                <div class="mt-4 flex justify-end gap-2 shrink-0">
                                     <button onclick="prevStep(1)" class="px-4 py-2 text-gray-400 hover:text-gray-600 font-medium text-sm">修改上一步</button>
-                                    <button onclick="nextStep(3)" class="px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition shadow-md hover:shadow-lg w-full md:w-auto">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                                    <button onclick="nextStep(3)" class="w-full md:w-auto px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition shadow-md hover:shadow-lg">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Step 3 -->
-                        <div id="step-3-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out]">
-                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                        <div id="step-3-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out] flex-1 flex flex-col h-full">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4 shrink-0">
                                 <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-rocket"></i></div>
                                 <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
                                     最後一步！<b>「未來」</b>。<br>
                                     這個經驗如何影響你未來的規劃？或是對你選科系有什麼幫助？
                                 </div>
                             </div>
-                            <div class="pl-11 md:pl-14">
-                                <div class="flex justify-end mb-2">
+                            <div class="pl-11 md:pl-14 flex-1 flex flex-col min-h-0">
+                                <div class="flex justify-end mb-2 shrink-0">
                                     <button onclick="aiAssist(3)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
                                 </div>
-                                <textarea id="inp-future" rows="5" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="這讓我確定想往...發展，未來希望深入研究..."></textarea>
-                                <div class="mt-4 flex justify-end gap-2">
+                                <textarea id="inp-future" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base flex-1 resize-none overflow-y-auto" placeholder="這讓我確定想往...發展，未來希望深入研究..."></textarea>
+                                <div class="mt-4 flex justify-end gap-2 shrink-0">
                                     <button onclick="prevStep(2)" class="px-4 py-2 text-gray-400 hover:text-gray-600 font-medium text-sm">修改上一步</button>
-                                    <button onclick="finishWizard()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-bold hover:shadow-lg transition shadow-md w-full md:w-auto">生成結果 <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></button>
+                                    <button onclick="finishWizard()" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-bold hover:shadow-lg transition shadow-md">生成結果 <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></button>
                                 </div>
                             </div>
                         </div>
 
                          <!-- Result Area -->
-                         <div id="wizard-result" class="hidden mt-8 border-t border-gray-100 pt-6">
-                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-green-500"></i> 生成完成！</h3>
-                            <div class="space-y-4">
-                                <div class="bg-gray-50 p-4 md:p-6 rounded-xl border border-gray-200 relative group">
-                                    <div class="text-xs text-gray-400 font-bold mb-2 uppercase">完整心得架構</div>
-                                    <div id="out-long" class="text-gray-700 text-sm md:text-base whitespace-pre-wrap leading-relaxed"></div>
+                         <div id="wizard-result" class="hidden h-full flex flex-col">
+                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2 shrink-0"><i class="fa-solid fa-check-circle text-green-500"></i> 生成完成！</h3>
+                            <div class="flex-1 min-h-0 relative">
+                                <div class="bg-gray-50 p-4 md:p-6 rounded-xl border border-gray-200 h-full flex flex-col relative group">
+                                    <div class="text-xs text-gray-400 font-bold mb-2 uppercase shrink-0">完整心得架構</div>
+                                    <div id="out-long" class="text-gray-700 text-sm md:text-base whitespace-pre-wrap leading-relaxed flex-1 overflow-y-auto"></div>
                                     <button onclick="copyText('out-long')" class="absolute top-2 right-2 bg-white text-orange-500 p-2 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition border border-gray-100 active:opacity-100"><i class="fa-regular fa-copy"></i></button>
                                 </div>
                             </div>
-                            <button onclick="location.reload()" class="w-full mt-6 py-3 text-gray-400 hover:text-gray-600 text-sm">重新開始</button>
+                            <button onclick="location.reload()" class="w-full mt-4 py-3 text-gray-400 hover:text-gray-600 text-sm shrink-0">重新開始</button>
                         </div>
                     </div>
                 </div>
@@ -1122,6 +1123,8 @@
 
             document.getElementById('out-long').innerText = longText;
             document.getElementById('wizard-result').classList.remove('hidden');
+            document.getElementById('step-3-block').classList.add('hidden');
+            
             const container = document.getElementById('wizard-content');
             setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
         }
