@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>學習歷程檔案全攻略 | 最終進化版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fcfcfc;
+            overflow: hidden; /* App-like feel */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Smooth Scrolling & Layout */
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            height: 100vh;
+            overflow-y: auto;
+            padding-bottom: 90px; /* Space for mobile nav */
+            -webkit-overflow-scrolling: touch;
+        }
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- FLIP CARD --- */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            height: 160px;
+            position: relative;
+        }
+        @media (max-width: 640px) { .flip-card { height: 150px; } }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+            border: 1px solid #f3f4f6;
+        }
+        @media (min-width: 768px) {
+            .flip-card-front, .flip-card-back { padding: 1rem; }
+        }
+
+        .flip-card-front { background-color: white; }
+        
+        .flip-card-back {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            transform: rotateY(180deg);
+            border: 2px solid #bae6fd;
+        }
+        .flip-card-back.course {
+            background-color: #fff7ed;
+            color: #c2410c;
+            border: 2px solid #fed7aa;
+        }
+
+        .flip-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            animation: bounce-hint 2s infinite;
+            pointer-events: none;
+        }
+        @keyframes bounce-hint {
+            0%, 100% {transform: translateY(0);}
+            50% {transform: translateY(-3px);}
+        }
+
+        /* --- UI ELEMENTS --- */
+        .code-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            z-index: 10;
+        }
+        .badge-orange { background-color: #fff7ed; color: #f97316; border: 1px solid #fed7aa; }
+        .badge-blue { background-color: #f0f9ff; color: #0ea5e9; border: 1px solid #bae6fd; }
+
+        .format-pill {
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .format-pill:active { transform: scale(0.95); }
+        .format-pill.active { ring: 2px; ring-offset: 2px; }
+
+        .ai-btn {
+            background: linear-gradient(90deg, #8b5cf6, #d946ef, #8b5cf6);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite linear;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Evolution Game Styles */
+        .evolution-card { transition: all 0.5s ease-in-out; }
+        .highlight-change { animation: flash-green 1s ease-out; }
+        @keyframes flash-green { 0% { background-color: #86efac; } 100% { background-color: transparent; } }
+        .progress-bar-fill { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Scrollbar & Input Fixes */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        input, textarea { font-size: 16px !important; }
+        
+        .nav-item.active { color: #f97316; }
+        .nav-item.active i { transform: scale(1.1); }
+    </style>
+</head>
+<body class="text-gray-600 h-screen flex flex-col md:flex-row">
+
+    <!-- Desktop Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 shadow-[2px_0_10px_rgba(0,0,0,0.02)] z-20 h-full">
+        <div class="p-6 border-b border-gray-50">
+            <div class="flex items-center gap-2 text-gray-800 font-black text-2xl">
+                <i class="fa-solid fa-folder-open text-orange-500"></i>
+                <span>攻略<span class="text-gray-400 font-light">助手</span></span>
+            </div>
+            <p class="text-xs text-gray-400 mt-2 tracking-wide">升學檔案全方位指南</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="showPage('home')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-3 text-gray-500 font-medium active-nav" data-target="home">
+                <i class="fa-solid fa-house w-6 text-center"></i> 首頁總覽
+            </button>
+            <button onclick="showPage('structure')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-3 text-gray-500 font-medium" data-target="structure">
+                <i class="fa-solid fa-sitemap w-6 text-center"></i> 完整架構
+            </button>
+            <button onclick="showPage('rules')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-3 text-gray-500 font-medium" data-target="rules">
+                <i class="fa-solid fa-scale-balanced w-6 text-center"></i> 格式規定
+            </button>
+            <button onclick="showPage('examples')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-3 text-gray-500 font-medium" data-target="examples">
+                <i class="fa-solid fa-flask w-6 text-center"></i> 實例進化
+            </button>
+            <button onclick="showPage('generator')" class="nav-btn w-full text-left px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition flex items-center gap-3 text-gray-500 font-medium" data-target="generator">
+                <i class="fa-solid fa-pen-nib w-6 text-center"></i> 寫作精靈
+            </button>
+        </nav>
+        <!-- Desktop Footer Credit -->
+        <div class="p-4 text-center text-xs text-gray-300 border-t border-gray-50 bg-white">
+            製作者：楊小山 CHY
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 relative bg-[#fcfcfc] h-full overflow-hidden">
+        
+        <!-- PAGE 1: HOME -->
+        <section id="home" class="page-section active">
+            <div class="h-full flex flex-col justify-center items-center relative overflow-hidden px-4 md:px-6 text-center">
+                <!-- Background decorations -->
+                <div class="absolute top-5 left-5 text-orange-100/50 text-6xl md:text-9xl animate-pulse opacity-30"><i class="fa-solid fa-quote-left"></i></div>
+                <div class="absolute bottom-20 right-5 text-blue-50/50 text-6xl md:text-9xl opacity-30"><i class="fa-solid fa-quote-right"></i></div>
+                
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-black mb-4 md:mb-6 text-gray-800 leading-tight tracking-tight">
+                    把你的高中生活<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">變成一個好故事</span>
+                </h1>
+                <p class="text-base sm:text-lg md:text-xl text-gray-500 max-w-2xl mb-8 md:mb-10 font-light px-2">
+                    學習歷程檔案不只是交作業，而是向大學教授自我介紹的最佳機會。<br class="hidden md:block">
+                    準備好開始你的旅程了嗎？
+                </p>
+                
+                <!-- Card Grid: Unified Icons and Text -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-4xl w-full">
+                    <button onclick="showPage('structure')" class="p-4 md:p-6 bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-orange-200 active:scale-95 transition group text-center">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-orange-50 rounded-full mx-auto mb-2 md:mb-3 flex items-center justify-center text-orange-500 text-lg md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-sitemap"></i></div>
+                        <h3 class="font-bold text-sm md:text-base text-gray-700">完整架構</h3>
+                    </button>
+                    <button onclick="showPage('rules')" class="p-4 md:p-6 bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-blue-200 active:scale-95 transition group text-center">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 rounded-full mx-auto mb-2 md:mb-3 flex items-center justify-center text-blue-500 text-lg md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <h3 class="font-bold text-sm md:text-base text-gray-700">格式規定</h3>
+                    </button>
+                    <button onclick="showPage('examples')" class="p-4 md:p-6 bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-green-200 active:scale-95 transition group text-center">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-green-50 rounded-full mx-auto mb-2 md:mb-3 flex items-center justify-center text-green-500 text-lg md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-flask"></i></div>
+                        <h3 class="font-bold text-sm md:text-base text-gray-700">實例進化</h3>
+                    </button>
+                    <button onclick="showPage('generator')" class="p-4 md:p-6 bg-white border border-gray-100 shadow-sm rounded-2xl hover:border-orange-200 active:scale-95 transition group text-center">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-orange-50 rounded-full mx-auto mb-2 md:mb-3 flex items-center justify-center text-orange-500 text-lg md:text-xl group-hover:scale-110 transition"><i class="fa-solid fa-pen-nib"></i></div>
+                        <h3 class="font-bold text-sm md:text-base text-gray-700">寫作精靈</h3>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Footer Credit -->
+            <footer class="py-6 text-center text-gray-300 text-xs md:hidden">
+                製作者：楊小山 CHY
+            </footer>
+        </section>
+
+        <!-- PAGE 2: STRUCTURE -->
+        <section id="structure" class="page-section">
+            <div class="container mx-auto px-4 py-8 md:py-12">
+                <div class="max-w-6xl mx-auto">
+                    <div class="mb-6 md:mb-10 text-center md:text-left">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2 text-gray-800">檔案架構地圖</h2>
+                    </div>
+
+                    <!-- School Zone -->
+                    <div class="bg-white border-t-4 border-gray-300 rounded-2xl p-4 md:p-6 mb-6 shadow-sm relative">
+                        <div class="flex items-center gap-3 mb-4 md:mb-6">
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">
+                                <i class="fa-solid fa-school mr-2"></i>學校負責登錄
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                            <div class="bg-gray-50/50 p-3 md:p-4 rounded-xl border border-gray-100 h-20 md:h-24 flex flex-col justify-center items-center text-center">
+                                <div class="font-bold text-gray-400 text-[10px] md:text-xs mb-1">A. 修課紀錄</div>
+                                <div class="font-bold text-sm md:text-base text-gray-700">學業成績</div>
+                            </div>
+                            <div class="bg-gray-50/50 p-3 md:p-4 rounded-xl border border-gray-100 h-20 md:h-24 flex flex-col justify-center items-center text-center">
+                                <div class="font-bold text-gray-400 text-[10px] md:text-xs mb-1">基本資料</div>
+                                <div class="font-bold text-sm md:text-base text-gray-700">學籍資料</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Student Zone Wrapper -->
+                    <div class="space-y-6 md:space-y-8">
+                        
+                        <!-- Course Results -->
+                        <div class="bg-white border-t-4 border-orange-300 rounded-2xl p-4 md:p-6 shadow-sm relative">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
+                                <span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-bold border border-orange-100">
+                                    <i class="fa-solid fa-user-pen mr-2"></i>課程學習成果 (學生負責上傳)
+                                </span>
+                                <span class="text-[10px] md:text-xs text-gray-400 font-mono bg-gray-50 px-2 py-1 rounded">需任課老師認證 (每學年勾選至多 6 件)</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                                <!-- Card B -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-orange">B</div>
+                                            <i class="fa-solid fa-file-invoice text-2xl md:text-3xl text-orange-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">書面報告</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back course">
+                                            <p class="text-xs md:text-sm font-bold">最常見的類型</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">期末報告、心得<br>請轉為PDF</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card C -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-orange">C</div>
+                                            <i class="fa-solid fa-hammer text-2xl md:text-3xl text-orange-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">實作作品</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back course">
+                                            <p class="text-xs md:text-sm font-bold">作品照片/影片</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">繪畫、程式<br>影片需<10MB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card D -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-orange">D</div>
+                                            <i class="fa-solid fa-flask text-2xl md:text-3xl text-orange-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1 leading-tight">自然科學領域<br>探究與實作</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back course">
+                                            <p class="text-xs md:text-sm font-bold">實驗紀錄</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">物理/化學/生物<br>實驗過程與發現</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card E -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-orange">E</div>
+                                            <i class="fa-solid fa-earth-americas text-2xl md:text-3xl text-orange-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1 leading-tight">社會領域<br>探究與實作</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back course">
+                                            <p class="text-xs md:text-sm font-bold">訪談/問卷</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">公民/歷史/地理<br>實地考察</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diverse Performance -->
+                        <div class="bg-white border-t-4 border-sky-300 rounded-2xl p-4 md:p-6 shadow-sm relative">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-2">
+                                <span class="bg-sky-50 text-sky-600 px-3 py-1 rounded-full text-xs font-bold border border-sky-100">
+                                    <i class="fa-solid fa-trophy mr-2"></i>多元表現 (學生負責上傳)
+                                </span>
+                                <span class="text-[10px] md:text-xs text-gray-400 font-mono bg-gray-50 px-2 py-1 rounded">自主上傳 (每學年勾選至多 10 件)</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                                <!-- Card F -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">F</div>
+                                            <i class="fa-solid fa-person-hiking text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1 leading-tight">高中自主學習<br>計畫與成果</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">計畫與成果</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">展現自學能力與<br>規劃執行力</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card G -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">G</div>
+                                            <i class="fa-solid fa-guitar text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">社團活動經驗</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">參與經驗</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">社團成果發表<br>團練紀錄</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card H -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">H</div>
+                                            <i class="fa-solid fa-user-tag text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">擔任幹部經驗</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">領導與服務</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">班級/社團<br>幹部反思</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card I -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">I</div>
+                                            <i class="fa-solid fa-hand-holding-heart text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">服務學習經驗</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">志工經驗</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">校內外志工<br>服務證明</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- Card J -->
+                                 <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">J</div>
+                                            <i class="fa-solid fa-trophy text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">競賽表現</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">校內外競賽</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">獎狀/參賽證明<br>與過程反思</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card K -->
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">K</div>
+                                            <i class="fa-solid fa-layer-group text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1 leading-tight">非修課紀錄<br>之成果作品</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">其他作品</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">無法歸類於<br>特定課程的作品</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- Card L -->
+                                 <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">L</div>
+                                            <i class="fa-solid fa-certificate text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1">檢定證照</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">能力證明</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">英檢、APCS<br>技術士證</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <!-- Card M -->
+                                 <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <div class="code-badge badge-blue">M</div>
+                                            <i class="fa-solid fa-star text-2xl md:text-3xl text-sky-400 mb-1 md:mb-2 mt-2 md:mt-4"></i>
+                                            <span class="font-bold text-gray-600 text-xs md:text-sm mt-1 leading-tight">特殊優良<br>表現證明</span>
+                                            <div class="flip-hint"><i class="fa-solid fa-rotate"></i></div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="text-xs md:text-sm font-bold">校級榮譽</p>
+                                            <p class="text-[10px] md:text-xs mt-1 md:mt-2 opacity-80">模範生<br>特殊貢獻獎</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Footer for Mobile -->
+                <div class="py-6 text-center text-gray-300 text-xs md:hidden">
+                    製作者：楊小山 CHY
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: RULES -->
+        <section id="rules" class="page-section">
+            <div class="container mx-auto px-4 py-8 md:py-12 flex flex-col items-center">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-gray-800">格式與大小檢查站</h2>
+                <div class="w-full max-w-4xl space-y-6 md:space-y-8">
+                    <!-- 1. Format Checker -->
+                    <div class="bg-white rounded-3xl shadow-sm p-5 md:p-8 border border-gray-100">
+                         <div class="flex items-center gap-3 mb-4 md:mb-6">
+                            <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                                <i class="fa-solid fa-filter"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold text-gray-700">1. 檔案格式快篩</h3>
+                        </div>
+                        <p class="text-gray-400 mb-4 text-sm">點擊下方的副檔名，檢查是否可以上傳：</p>
+                        <div id="format-buttons-container" class="grid grid-cols-4 md:grid-cols-8 gap-2 md:gap-3 mb-6"></div>
+                        <div id="format-result" class="hidden p-4 rounded-xl border-l-4 transition-all animate-[fadeIn_0.3s_ease-out]"></div>
+                    </div>
+
+                    <!-- 2. Size Simulator -->
+                    <div class="bg-white rounded-3xl shadow-sm p-5 md:p-8 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-4 md:mb-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                            </div>
+                            <h3 class="text-lg md:text-xl font-bold text-gray-700">2. 檔案大小模擬</h3>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
+                            <div class="flex-1 w-full space-y-6">
+                                <div class="flex gap-3 md:gap-4">
+                                    <button onclick="setLimit('doc')" id="btn-doc" class="flex-1 py-3 border border-orange-400 bg-orange-50 text-orange-600 rounded-xl font-bold transition active:scale-95 text-sm md:text-base">
+                                        <i class="fa-solid fa-file-pdf mr-2"></i>文件/圖片
+                                    </button>
+                                    <button onclick="setLimit('video')" id="btn-video" class="flex-1 py-3 border border-gray-200 text-gray-400 rounded-xl font-bold hover:border-purple-300 transition active:scale-95 text-sm md:text-base">
+                                        <i class="fa-solid fa-video mr-2"></i>影音
+                                    </button>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-end">
+                                        <span class="text-sm text-gray-400">拖動滑桿模擬大小</span>
+                                        <span id="size-display" class="text-2xl font-mono text-blue-600 font-bold">2.5 <span class="text-sm">MB</span></span>
+                                    </div>
+                                    <input type="range" id="size-slider" min="0" max="15" step="0.5" value="2.5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                                    <div class="flex justify-between text-xs text-gray-300 font-mono">
+                                        <span>0MB</span>
+                                        <span>5MB</span>
+                                        <span>10MB</span>
+                                        <span>15MB</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/3 flex flex-col items-center justify-center p-6 bg-gray-50 rounded-2xl border border-dashed border-gray-300 transition h-32 md:h-40" id="result-box">
+                                <div id="result-icon" class="text-4xl md:text-5xl text-green-500 mb-2 transition-transform duration-300">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                </div>
+                                <h4 id="result-title" class="text-base md:text-lg font-black text-gray-700">Pass!</h4>
+                                <p id="result-desc" class="text-center text-xs text-gray-400 mt-1">檔案大小符合規定。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer for Mobile -->
+                <div class="py-6 text-center text-gray-300 text-xs md:hidden">
+                    製作者：楊小山 CHY
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: EXAMPLES -->
+        <section id="examples" class="page-section">
+            <div class="container mx-auto px-4 py-8 md:py-12">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-8 md:mb-10">
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2 text-gray-800">檔案進化論</h2>
+                        <p class="text-gray-500 text-sm md:text-base">這是一份不及格的檔案。請點擊下方的「進化按鈕」，將它升級成完美作品！</p>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                        <!-- Controls -->
+                        <div class="w-full md:w-1/3 space-y-4">
+                            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 text-center">
+                                <h4 class="text-gray-400 text-xs font-bold uppercase mb-2">檔案完整度</h4>
+                                <div class="text-4xl font-black text-blue-500 mb-2" id="evo-score">0%</div>
+                                <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                    <div id="evo-progress" class="bg-blue-400 h-2 w-0 progress-bar-fill"></div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <button id="btn-evo-1" onclick="evolve(1)" class="w-full py-3 md:py-4 px-4 md:px-6 bg-white border border-red-200 rounded-xl flex items-center gap-3 md:gap-4 hover:border-red-400 hover:shadow-md transition text-left group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none active:bg-gray-50">
+                                    <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 group-hover:scale-110 transition shrink-0"><i class="fa-solid fa-pen"></i></div>
+                                    <div>
+                                        <div class="font-bold text-gray-700 text-sm md:text-base">修正檔名</div>
+                                        <div class="text-xs text-gray-400">告別亂碼</div>
+                                    </div>
+                                </button>
+                                <button id="btn-evo-2" onclick="evolve(2)" class="w-full py-3 md:py-4 px-4 md:px-6 bg-white border border-orange-200 rounded-xl flex items-center gap-3 md:gap-4 hover:border-orange-400 hover:shadow-md transition text-left group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none active:bg-gray-50" disabled>
+                                    <div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 group-hover:scale-110 transition shrink-0"><i class="fa-solid fa-align-left"></i></div>
+                                    <div>
+                                        <div class="font-bold text-gray-700 text-sm md:text-base">擴充內容</div>
+                                        <div class="text-xs text-gray-400">具體細節</div>
+                                    </div>
+                                </button>
+                                <button id="btn-evo-3" onclick="evolve(3)" class="w-full py-3 md:py-4 px-4 md:px-6 bg-white border border-green-200 rounded-xl flex items-center gap-3 md:gap-4 hover:border-green-400 hover:shadow-md transition text-left group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none active:bg-gray-50" disabled>
+                                    <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500 group-hover:scale-110 transition shrink-0"><i class="fa-solid fa-lightbulb"></i></div>
+                                    <div>
+                                        <div class="font-bold text-gray-700 text-sm md:text-base">深度反思</div>
+                                        <div class="text-xs text-gray-400">連結未來</div>
+                                    </div>
+                                </button>
+                            </div>
+                            <button onclick="resetEvolution()" class="w-full py-2 text-gray-400 text-sm hover:text-gray-600"><i class="fa-solid fa-rotate-right mr-1"></i> 重置進化</button>
+                        </div>
+
+                        <!-- Card -->
+                        <div class="flex-1 w-full relative">
+                            <div id="file-card" class="bg-white rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 min-h-[350px] md:min-h-[400px] evolution-card relative z-10">
+                                <div class="bg-gray-800 text-white p-4 flex justify-between items-center transition-colors duration-500" id="file-header">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs"><i class="fa-solid fa-file"></i></div>
+                                        <span class="font-mono text-xs md:text-sm opacity-70 truncate max-w-[150px] md:max-w-none" id="file-name">841811121.jpg</span>
+                                    </div>
+                                    <span class="text-[10px] md:text-xs bg-white/20 px-2 py-1 rounded shrink-0" id="file-status">草稿</span>
+                                </div>
+                                <div class="p-6 md:p-8">
+                                    <h3 class="font-bold text-gray-300 text-xs uppercase mb-2">百字簡述</h3>
+                                    <p class="text-gray-400 text-lg md:text-xl leading-relaxed font-light" id="file-content">這是一部關於生命教育的電影，我覺得很好看，豬很可愛。</p>
+                                    <div id="file-reflection" class="hidden mt-6 pt-6 border-t border-gray-100 animate-[fadeIn_0.5s_ease-out]">
+                                        <h3 class="font-bold text-green-600 text-xs uppercase mb-2"><i class="fa-solid fa-star mr-1"></i> 亮點反思</h3>
+                                        <p class="text-gray-600 text-sm bg-green-50 p-4 rounded-xl border border-green-100 leading-relaxed">
+                                            透過電影，我不再將人類優越視為理所當然，未來將以更謙卑的心看待接觸的人事物。這也啟發了我對生命科學領域的興趣。
+                                        </p>
+                                    </div>
+                                </div>
+                                <div id="stamp-pass" class="hidden absolute bottom-5 right-5 md:bottom-10 md:right-10 border-4 border-green-500 text-green-500 font-black text-3xl md:text-4xl p-2 md:p-4 rounded-xl rotate-[-15deg] opacity-0 animate-[stamp_0.5s_ease-out_forwards] z-20">PERFECT</div>
+                            </div>
+                            <div id="confetti-zone" class="absolute inset-0 pointer-events-none z-0 overflow-hidden"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer for Mobile -->
+                <div class="py-6 text-center text-gray-300 text-xs md:hidden">
+                    製作者：楊小山 CHY
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: GENERATOR -->
+        <section id="generator" class="page-section bg-gray-50">
+             <div class="container mx-auto px-4 py-8 h-full flex flex-col">
+                <div class="max-w-3xl mx-auto w-full flex-1 flex flex-col bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 mb-8">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-orange-400 to-red-500 p-4 flex justify-between items-center text-white">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-bold text-base md:text-lg">寫作精靈</h2>
+                                <p class="text-xs opacity-90">Step <span id="wizard-step-num">1</span> / 3</p>
+                            </div>
+                        </div>
+                        <div class="w-1/3 h-1.5 md:h-2 bg-black/20 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-white transition-all duration-500" style="width: 33%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 md:space-y-6" id="wizard-content">
+                        <!-- Step 1 -->
+                        <div id="step-1-block" class="wizard-step animate-[fadeIn_0.5s_ease-out]">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                                <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
+                                    嗨！我是你的寫作助手。讓我們從<b>「過去」</b>開始。<br>
+                                    請問你參加了什麼活動？在這個過程中，你做了什麼？遇到了什麼困難？
+                                </div>
+                            </div>
+                            <div class="pl-11 md:pl-14">
+                                <div class="flex justify-end mb-2">
+                                    <button onclick="aiAssist(1)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
+                                </div>
+                                <input type="text" id="inp-title" class="w-full mb-3 p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="活動名稱 (例如：校慶園遊會)">
+                                <textarea id="inp-past" rows="4" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="我負責...過程中發生了..."></textarea>
+                                <button onclick="nextStep(2)" class="mt-4 px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition float-right shadow-md hover:shadow-lg w-full md:w-auto">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div id="step-2-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out]">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-lightbulb"></i></div>
+                                <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
+                                    很好！接下來是<b>「現在」</b>。<br>
+                                    針對剛剛提到的困難，你怎麼解決？你覺得自己學會了什麼新能力？
+                                </div>
+                            </div>
+                            <div class="pl-11 md:pl-14">
+                                <div class="flex justify-end mb-2">
+                                    <button onclick="aiAssist(2)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
+                                </div>
+                                <textarea id="inp-present" rows="5" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="我透過...解決了問題，我發現自己學會了..."></textarea>
+                                <div class="mt-4 flex justify-end gap-2">
+                                    <button onclick="prevStep(1)" class="px-4 py-2 text-gray-400 hover:text-gray-600 font-medium text-sm">修改上一步</button>
+                                    <button onclick="nextStep(3)" class="px-6 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition shadow-md hover:shadow-lg w-full md:w-auto">下一步 <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div id="step-3-block" class="wizard-step hidden animate-[fadeIn_0.5s_ease-out]">
+                            <div class="flex gap-3 md:gap-4 mb-3 md:mb-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-100 flex-shrink-0 flex items-center justify-center text-orange-600"><i class="fa-solid fa-rocket"></i></div>
+                                <div class="bg-gray-50 p-3 md:p-4 rounded-2xl rounded-tl-none text-gray-600 text-sm md:text-base border border-gray-100">
+                                    最後一步！<b>「未來」</b>。<br>
+                                    這個經驗如何影響你未來的規劃？或是對你選科系有什麼幫助？
+                                </div>
+                            </div>
+                            <div class="pl-11 md:pl-14">
+                                <div class="flex justify-end mb-2">
+                                    <button onclick="aiAssist(3)" class="ai-btn px-3 py-1.5 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition flex items-center gap-1 active:scale-95"><i class="fa-solid fa-wand-magic-sparkles"></i> AI 靈感</button>
+                                </div>
+                                <textarea id="inp-future" rows="5" class="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-300 outline-none text-gray-700 text-base" placeholder="這讓我確定想往...發展，未來希望深入研究..."></textarea>
+                                <div class="mt-4 flex justify-end gap-2">
+                                    <button onclick="prevStep(2)" class="px-4 py-2 text-gray-400 hover:text-gray-600 font-medium text-sm">修改上一步</button>
+                                    <button onclick="finishWizard()" class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-full font-bold hover:shadow-lg transition shadow-md w-full md:w-auto">生成結果 <i class="fa-solid fa-wand-magic-sparkles ml-1"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Result Area -->
+                         <div id="wizard-result" class="hidden mt-8 border-t border-gray-100 pt-6">
+                            <h3 class="font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-check-circle text-green-500"></i> 生成完成！</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 md:p-6 rounded-xl border border-gray-200 relative group">
+                                    <div class="text-xs text-gray-400 font-bold mb-2 uppercase">完整心得架構</div>
+                                    <div id="out-long" class="text-gray-700 text-sm md:text-base whitespace-pre-wrap leading-relaxed"></div>
+                                    <button onclick="copyText('out-long')" class="absolute top-2 right-2 bg-white text-orange-500 p-2 rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition border border-gray-100 active:opacity-100"><i class="fa-regular fa-copy"></i></button>
+                                </div>
+                            </div>
+                            <button onclick="location.reload()" class="w-full mt-6 py-3 text-gray-400 hover:text-gray-600 text-sm">重新開始</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer for Mobile -->
+                <div class="py-6 text-center text-gray-300 text-xs md:hidden">
+                    製作者：楊小山 CHY
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Mobile Navigation (Bottom) -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-100 flex justify-around py-3 px-2 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] safe-area-bottom">
+        <button onclick="showPage('home')" class="nav-item flex flex-col items-center text-gray-400 text-[10px] gap-1 active w-1/5" data-target="home">
+            <i class="fa-solid fa-house text-lg transition-transform"></i> 首頁總覽
+        </button>
+        <button onclick="showPage('structure')" class="nav-item flex flex-col items-center text-gray-400 text-[10px] gap-1 w-1/5" data-target="structure">
+            <i class="fa-solid fa-sitemap text-lg transition-transform"></i> 完整架構
+        </button>
+        <button onclick="showPage('rules')" class="nav-item flex flex-col items-center text-gray-400 text-[10px] gap-1 w-1/5" data-target="rules">
+            <i class="fa-solid fa-scale-balanced text-lg transition-transform"></i> 格式規定
+        </button>
+        <button onclick="showPage('examples')" class="nav-item flex flex-col items-center text-gray-400 text-[10px] gap-1 w-1/5" data-target="examples">
+            <i class="fa-solid fa-flask text-lg transition-transform"></i> 實例進化
+        </button>
+        <button onclick="showPage('generator')" class="nav-item flex flex-col items-center text-gray-400 text-[10px] gap-1 w-1/5" data-target="generator">
+            <i class="fa-solid fa-pen-nib text-lg transition-transform"></i> 寫作精靈
+        </button>
+    </nav>
+
+    <script>
+        // Initialize
+        window.onload = function() {
+            showPage('home');
+            renderFormatButtons();
+        };
+
+        // --- Navigation Logic ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            // Desktop Nav
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === pageId) {
+                    btn.classList.add('bg-orange-50', 'text-orange-600', 'active-nav');
+                    btn.classList.remove('text-gray-500');
+                } else {
+                    btn.classList.remove('bg-orange-50', 'text-orange-600', 'active-nav');
+                    btn.classList.add('text-gray-500');
+                }
+            });
+
+            // Mobile Nav
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                if(btn.dataset.target === pageId) {
+                    btn.classList.add('active', 'text-orange-600');
+                    btn.classList.remove('text-gray-400');
+                } else {
+                    btn.classList.remove('active', 'text-orange-600');
+                    btn.classList.add('text-gray-400');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        // --- Rules Simulator Logic ---
+        let currentLimit = 4;
+        function setLimit(type) {
+            const btnDoc = document.getElementById('btn-doc');
+            const btnVideo = document.getElementById('btn-video');
+            const slider = document.getElementById('size-slider');
+
+            if(type === 'doc') {
+                currentLimit = 4;
+                btnDoc.className = "flex-1 py-3 border border-orange-400 bg-orange-50 text-orange-600 rounded-xl font-bold transition text-sm md:text-base";
+                btnVideo.className = "flex-1 py-3 border border-gray-200 text-gray-400 rounded-xl font-bold hover:border-purple-300 transition text-sm md:text-base";
+                slider.max = 8; slider.value = 2.5;
+            } else {
+                currentLimit = 10;
+                btnVideo.className = "flex-1 py-3 border border-purple-500 bg-purple-50 text-purple-600 rounded-xl font-bold transition text-sm md:text-base";
+                btnDoc.className = "flex-1 py-3 border border-gray-200 text-gray-400 rounded-xl font-bold hover:border-orange-300 transition text-sm md:text-base";
+                slider.max = 15; slider.value = 8;
+            }
+            updateSimulation(slider.value);
+        }
+
+        document.getElementById('size-slider').addEventListener('input', function(e) {
+            updateSimulation(e.target.value);
+        });
+
+        function updateSimulation(val) {
+            const display = document.getElementById('size-display');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const desc = document.getElementById('result-desc');
+            const box = document.getElementById('result-box');
+
+            display.innerHTML = val + ' <span class="text-sm">MB</span>';
+            
+            if(parseFloat(val) <= currentLimit) {
+                icon.className = "text-4xl md:text-5xl text-green-500 mb-2 transition-transform duration-300 scale-100";
+                icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                title.innerText = "Pass!";
+                title.className = "text-base md:text-lg font-black text-green-700";
+                desc.innerText = `檔案大小 ${val}MB 在 ${currentLimit}MB 限制內。`;
+                box.className = "w-full md:w-1/3 flex flex-col items-center justify-center p-4 md:p-6 bg-green-50 rounded-2xl border-2 border-dashed border-green-300 transition h-32 md:h-40";
+            } else {
+                icon.className = "text-4xl md:text-5xl text-red-500 mb-2 transition-transform duration-300 shake";
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                title.innerText = "Too Big!";
+                title.className = "text-base md:text-lg font-black text-red-700";
+                desc.innerText = `檔案太大了！超過 ${currentLimit}MB 限制。`;
+                box.className = "w-full md:w-1/3 flex flex-col items-center justify-center p-4 md:p-6 bg-red-50 rounded-2xl border-2 border-dashed border-red-300 transition h-32 md:h-40";
+            }
+        }
+
+        // --- Format Checker Logic (Randomized) ---
+        function renderFormatButtons() {
+            const container = document.getElementById('format-buttons-container');
+            const formats = ['.pdf', '.jpg', '.png', '.doc', '.mp4', '.mp3', '.mov', '.exe'];
+            
+            // Random Shuffle
+            for (let i = formats.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [formats[i], formats[j]] = [formats[j], formats[i]];
+            }
+
+            container.innerHTML = '';
+            formats.forEach(ext => {
+                const btn = document.createElement('button');
+                btn.className = "format-pill py-2 rounded-lg bg-gray-100 hover:bg-gray-200 font-mono text-sm font-bold text-gray-600";
+                btn.innerText = ext;
+                btn.onclick = (e) => checkFormat(ext.replace('.', ''));
+                container.appendChild(btn);
+            });
+        }
+
+        function checkFormat(ext) {
+            const resultBox = document.getElementById('format-result');
+            resultBox.classList.remove('hidden');
+            
+            // Reset active pills
+            document.querySelectorAll('.format-pill').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-400');
+                if(btn.innerText === '.' + ext) {
+                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-blue-400');
+                }
+            });
+
+            if (['pdf', 'jpg', 'png', 'mp3', 'mp4'].includes(ext)) {
+                resultBox.className = "p-4 rounded-xl border-l-4 border-green-500 bg-green-50 animate-[fadeIn_0.3s_ease-out]";
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-check-circle text-green-600 mt-1"></i>
+                        <div>
+                            <span class="font-bold text-green-800">Pass! 格式正確</span>
+                            <p class="text-sm text-green-700 mt-1">.${ext} 是系統支援的格式，請放心上傳。</p>
+                        </div>
+                    </div>
+                `;
+            } else if (['doc', 'ppt'].includes(ext)) {
+                resultBox.className = "p-4 rounded-xl border-l-4 border-yellow-500 bg-yellow-50 animate-[fadeIn_0.3s_ease-out]";
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1"></i>
+                        <div>
+                            <span class="font-bold text-yellow-800">請轉檔！</span>
+                            <p class="text-sm text-yellow-700 mt-1">系統不支援 .${ext}，請另存新檔為 PDF 後再上傳。</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultBox.className = "p-4 rounded-xl border-l-4 border-red-500 bg-red-50 animate-[fadeIn_0.3s_ease-out]";
+                resultBox.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-circle-xmark text-red-600 mt-1"></i>
+                        <div>
+                            <span class="font-bold text-red-800">不支援此格式</span>
+                            <p class="text-sm text-red-700 mt-1">請勿上傳 .${ext} 檔案。若是影片請轉為 MP4，若是文件請轉為 PDF。</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // --- Evolution Game Logic ---
+        let currentStage = 0;
+
+        function evolve(stage) {
+            if(stage !== currentStage + 1) return;
+
+            currentStage = stage;
+            const card = document.getElementById('file-card');
+            const scoreDisplay = document.getElementById('evo-score');
+            const progressBar = document.getElementById('evo-progress');
+            const fileName = document.getElementById('file-name');
+            const fileHeader = document.getElementById('file-header');
+            const fileStatus = document.getElementById('file-status');
+            const fileContent = document.getElementById('file-content');
+
+            card.classList.add('highlight-change');
+            setTimeout(() => card.classList.remove('highlight-change'), 1000);
+
+            if(stage === 1) {
+                scoreDisplay.innerText = "30%";
+                progressBar.style.width = "30%";
+                fileName.innerText = "生命教育電影心得.pdf";
+                fileName.classList.remove("opacity-70");
+                fileName.classList.add("font-bold");
+                fileHeader.classList.remove("bg-gray-800");
+                fileHeader.classList.add("bg-blue-600");
+                fileStatus.innerText = "修正中";
+                fileStatus.classList.replace("bg-white/20", "bg-white/30");
+                
+                document.getElementById('btn-evo-1').disabled = true;
+                document.getElementById('btn-evo-1').classList.add("opacity-50");
+                document.getElementById('btn-evo-2').disabled = false;
+                document.getElementById('btn-evo-2').classList.add("ring-4", "ring-orange-100");
+            } else if (stage === 2) {
+                scoreDisplay.innerText = "70%";
+                progressBar.style.width = "70%";
+                fileContent.classList.remove("text-gray-400", "text-xl");
+                fileContent.classList.add("text-gray-800", "text-base");
+                fileContent.innerHTML = "這部電影讓我反思<span class='bg-yellow-100 px-1'>飲食節制、環境議題與人類傲慢</span>。原本我以為人類是萬物之靈，但透過豬的視角，我看見了生命的另一種可能。";
+                
+                document.getElementById('btn-evo-2').disabled = true;
+                document.getElementById('btn-evo-2').classList.remove("ring-4", "ring-orange-100");
+                document.getElementById('btn-evo-2').classList.add("opacity-50");
+                document.getElementById('btn-evo-3').disabled = false;
+                document.getElementById('btn-evo-3').classList.add("ring-4", "ring-green-100");
+            } else if (stage === 3) {
+                scoreDisplay.innerText = "100%";
+                progressBar.style.width = "100%";
+                progressBar.classList.replace("bg-blue-400", "bg-green-500");
+                scoreDisplay.classList.replace("text-blue-500", "text-green-600");
+                
+                document.getElementById('file-reflection').classList.remove('hidden');
+                document.getElementById('stamp-pass').classList.remove('hidden');
+                fileHeader.classList.replace("bg-blue-600", "bg-green-600");
+                fileStatus.innerText = "完美";
+                fileStatus.classList.replace("bg-blue-500", "bg-green-500");
+
+                document.getElementById('btn-evo-3').disabled = true;
+                document.getElementById('btn-evo-3').classList.remove("ring-4", "ring-green-100");
+                document.getElementById('btn-evo-3').classList.add("opacity-50");
+                createConfetti();
+            }
+        }
+
+        function resetEvolution() {
+            currentStage = 0;
+            const scoreDisplay = document.getElementById('evo-score');
+            const progressBar = document.getElementById('evo-progress');
+            const fileName = document.getElementById('file-name');
+            const fileHeader = document.getElementById('file-header');
+            const fileStatus = document.getElementById('file-status');
+            const fileContent = document.getElementById('file-content');
+            
+            scoreDisplay.innerText = "0%";
+            scoreDisplay.classList.replace("text-green-600", "text-blue-600");
+            progressBar.style.width = "0%";
+            progressBar.classList.replace("bg-green-500", "bg-blue-400");
+
+            fileName.innerText = "841811121.jpg";
+            fileName.classList.add("opacity-70");
+            fileName.classList.remove("font-bold");
+            
+            fileHeader.className = "bg-gray-800 text-white p-4 flex justify-between items-center transition-colors duration-500";
+            fileStatus.innerText = "草稿";
+            fileStatus.className = "text-xs bg-white/20 px-2 py-1 rounded";
+
+            fileContent.className = "text-gray-400 text-xl leading-relaxed font-light";
+            fileContent.innerText = "這是一部關於生命教育的電影，我覺得很好看，豬很可愛。";
+            
+            document.getElementById('file-reflection').classList.add('hidden');
+            document.getElementById('stamp-pass').classList.add('hidden');
+
+            document.getElementById('btn-evo-1').disabled = false;
+            document.getElementById('btn-evo-1').classList.remove("opacity-50");
+            document.getElementById('btn-evo-2').disabled = true;
+            document.getElementById('btn-evo-2').classList.remove("opacity-50", "ring-4", "ring-orange-100");
+            document.getElementById('btn-evo-3').disabled = true;
+            document.getElementById('btn-evo-3').classList.remove("opacity-50", "ring-4", "ring-green-100");
+        }
+
+        function createConfetti() {
+            const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'];
+            const container = document.getElementById('confetti-zone');
+            container.innerHTML = '';
+            
+            for(let i=0; i<50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute';
+                conf.style.width = '10px';
+                conf.style.height = '10px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.top = '-10px';
+                conf.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                container.appendChild(conf);
+            }
+        }
+
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fall { to { transform: translateY(500px) rotate(720deg); } }
+            @keyframes stamp { 0% { transform: scale(3) rotate(-15deg); opacity: 0; } 100% { transform: scale(1) rotate(-15deg); opacity: 1; } }
+        `;
+        document.head.appendChild(style);
+
+        // --- Wizard & AI Logic ---
+        const aiTemplates = [
+            { 1: { title: "校慶園遊會 - 乾冰汽水攤位", text: "我擔任班級攤位的總召集人，負責統籌物資採購與人力分配。過程中我們遇到了乾冰保存不易的問題，導致試賣時效果不佳，且預算一度超支。" }, 2: { text: "針對乾冰問題，我上網查資料並請教化學老師，最後決定改變容器並精算用量，成功解決保存難題。這次經驗讓我學會了如何在壓力下冷靜分析問題，以及團隊溝通協調的重要性。" }, 3: { text: "這個經歷讓我發現自己對於「專案管理」與「解決實務問題」充滿熱情。未來我希望能進入企管系或工管系，深入學習組織運作與資源最佳化的知識。" } },
+            { 1: { title: "生物解剖實驗 - 青蛙構造觀察", text: "在生物課的青蛙解剖實驗中，我負責執刀。一開始因為害怕見血與手抖，遲遲不敢下刀，甚至差點劃破內臟，導致實驗進度落後。" }, 2: { text: "我深呼吸冷靜下來，並請組員協助固定，仔細對照課本圖示，一步步精準操作。最終成功分離出完整的消化系統。我學會了面對恐懼時的自我調節，以及科學實驗所需的嚴謹態度。" }, 3: { text: "這次實驗讓我對生物體的精妙構造產生了極大的敬畏與好奇。這更加堅定了我未來報考生命科學或護理相關科系的決心，希望能更深入探索生命的奧秘。" } },
+            { 1: { title: "地理實察 - 傳統市場變遷研究", text: "我們小組前往在地的老市場進行訪談。起初因為害羞不敢開口，加上部分攤商講台語，溝通一度陷入僵局，收集到的問卷數量遠低於預期。" }, 2: { text: "我們調整策略，先從觀察與購買小東西開始建立關係，並請教長輩台語詞彙。透過誠懇的態度，我們終於聽到了許多在地故事。這讓我學會了跨世代溝通的技巧與田野調查的實務眉角。" }, 3: { text: "走出教室的學習讓我看見了課本知識與真實生活的連結。這份對人文土地的關懷，讓我希望能進入社會學系或人文地理相關科系，繼續探討都市變遷下的社會議題。" } },
+            { 1: { title: "吉他社成果發表 - 擔任節奏吉他手", text: "這是我們第一次大型成發，我負責節奏吉他。練習時我總是抓不準切分音的拍子，導致與主奏吉他手頻頻放槍，團練氣氛一度非常緊繃。" }, 2: { text: "我主動向學長請教，並下載節拍器每天回家苦練一小時。在團練時，我也更專注聆聽鼓手的節奏，終於達成了完美的默契。我深刻體會到「台上一分鐘，台下十年功」以及團隊合作中傾聽的重要性。" }, 3: { text: "音樂不僅是娛樂，更是一種溝通語言。這段經歷培養了我的耐挫力與協調能力，我相信這些軟實力在未來無論從事什麼領域的工作，都是不可或缺的資產。" } },
+            { 1: { title: "海岸淨灘志工服務", text: "週末我參加了社區的淨灘活動。原本以為只是簡單的撿垃圾，到了現場才發現海廢數量驚人，且許多塑膠微粒卡在岩縫中，怎麼清都清不完，讓人感到深深的無力感。" }, 2: { text: "透過與資深志工的交流，我了解到淨灘只是末端處理，源頭減塑才是關鍵。回校後，我發起了班級減塑挑戰。我學會了不因力量微小而放棄，而是思考如何擴大影響力。" }, 3: { text: "這次志工經驗讓我不再只是環境議題的旁觀者。未來我希望能結合所學，關注環境工程或永續發展領域，為守護地球環境貢獻一份心力。" } }
+        ];
+
+        let currentTemplateIndex = -1;
+
+        function aiAssist(step) {
+            if (step === 1) {
+                currentTemplateIndex = (currentTemplateIndex + 1) % aiTemplates.length;
+            } else {
+                if(currentTemplateIndex === -1) currentTemplateIndex = 0;
+            }
+            const selectedTemplate = aiTemplates[currentTemplateIndex];
+            const btn = document.querySelector(`#step-${step}-block .ai-btn`);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
+            
+            setTimeout(() => {
+                if (step === 1) {
+                    document.getElementById('inp-title').value = selectedTemplate[1].title;
+                    document.getElementById('inp-past').value = selectedTemplate[1].text;
+                } else if (step === 2) {
+                    document.getElementById('inp-present').value = selectedTemplate[2].text;
+                } else if (step === 3) {
+                    document.getElementById('inp-future').value = selectedTemplate[3].text;
+                }
+                btn.innerHTML = originalText;
+                const textarea = step === 1 ? document.getElementById('inp-past') : step === 2 ? document.getElementById('inp-present') : document.getElementById('inp-future');
+                textarea.classList.add('ring-4', 'ring-purple-200');
+                setTimeout(() => textarea.classList.remove('ring-4', 'ring-purple-200'), 500);
+            }, 800);
+        }
+
+        function nextStep(step) {
+            document.getElementById(`step-${step-1}-block`).classList.add('hidden');
+            document.getElementById(`step-${step}-block`).classList.remove('hidden');
+            updateProgress(step);
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step-${step+1}-block`).classList.add('hidden');
+            document.getElementById(`step-${step}-block`).classList.remove('hidden');
+            updateProgress(step);
+        }
+
+        function updateProgress(step) {
+            document.getElementById('wizard-step-num').innerText = step;
+            const percentage = step === 1 ? '33%' : step === 2 ? '66%' : '100%';
+            document.getElementById('progress-bar').style.width = percentage;
+        }
+
+        function finishWizard() {
+            const title = document.getElementById('inp-title').value || "活動";
+            const past = document.getElementById('inp-past').value;
+            const present = document.getElementById('inp-present').value;
+            const future = document.getElementById('inp-future').value;
+
+            if(!past && !present) { alert("請至少輸入一些內容喔！"); return; }
+
+            const longText = `【${title}】學習反思\n\n一、歷程紀錄 (Process)\n${past}\n\n二、反思與收穫 (Reflection)\n${present}\n\n三、未來啟發 (Future)\n${future}`;
+
+            document.getElementById('out-long').innerText = longText;
+            document.getElementById('wizard-result').classList.remove('hidden');
+            const container = document.getElementById('wizard-content');
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
+        }
+
+        function copyText(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text).then(() => { alert('已複製！'); });
+        }
+    </script>
+</body>
+</html>
