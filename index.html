@@ -36,7 +36,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- FLIP CARD --- */
+        /* --- FLIP CARD (Enhanced for hiding front content) --- */
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
@@ -57,11 +57,12 @@
         .flip-card.flipped .flip-card-inner {
             transform: rotateY(180deg);
         }
+
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Standard hiding */
             backface-visibility: hidden;
             border-radius: 1rem;
             display: flex;
@@ -76,18 +77,32 @@
             .flip-card-front, .flip-card-back { padding: 1rem; }
         }
 
-        .flip-card-front { background-color: white; }
+        /* Front specific */
+        .flip-card-front { 
+            background-color: white; 
+            z-index: 2; /* Initially on top */
+        }
         
+        /* Back specific */
         .flip-card-back {
             background-color: #f0f9ff;
             color: #0369a1;
             transform: rotateY(180deg);
             border: 2px solid #bae6fd;
+            z-index: 1; /* Initially below */
         }
         .flip-card-back.course {
             background-color: #fff7ed;
             color: #c2410c;
             border: 2px solid #fed7aa;
+        }
+
+        /* Z-Index Swapping to ensure badge B/C etc are strictly hidden */
+        .flip-card.flipped .flip-card-front {
+            z-index: 0; /* Push to back when flipped */
+        }
+        .flip-card.flipped .flip-card-back {
+            z-index: 2; /* Pull to front when flipped */
         }
 
         .flip-hint {
@@ -125,7 +140,7 @@
         .format-pill {
             cursor: pointer;
             transition: all 0.2s;
-            min-height: 48px; /* Increased touch target */
+            min-height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -165,7 +180,7 @@
                 <i class="fa-solid fa-folder-open text-orange-500"></i>
                 <span>攻略<span class="text-gray-400 font-light">助手</span></span>
             </div>
-            <!-- Updated Sidebar Title -->
+            <!-- Title -->
             <p class="text-xs text-gray-400 mt-2 tracking-wide">學習歷程檔案全方位指南</p>
         </div>
         <nav class="flex-1 p-4 space-y-2">
@@ -199,7 +214,6 @@
                 <div class="absolute top-5 left-5 text-orange-100/50 text-6xl md:text-9xl animate-pulse opacity-30"><i class="fa-solid fa-quote-left"></i></div>
                 <div class="absolute bottom-20 right-5 text-blue-50/50 text-6xl md:text-9xl opacity-30"><i class="fa-solid fa-quote-right"></i></div>
                 
-                <!-- Increased Line Height -->
                 <h1 class="text-3xl sm:text-4xl md:text-6xl font-black mb-4 md:mb-6 text-gray-800 leading-relaxed tracking-tight">
                     把你的高中生活<br>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">變成一個好故事</span>
